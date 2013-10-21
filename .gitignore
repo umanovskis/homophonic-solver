@@ -1,0 +1,14 @@
+*.kdev4
+Makefile
+build/
+*.h~
+*.cpp~
+*.txt~
+*.bak
+*.tmp
+a.out
+gmon.out
+CMakeCache.txt
+cmake_install.cmake
+CMakeFiles/
+profile
