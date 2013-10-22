@@ -44,6 +44,7 @@ void Solver::Start()
 	
 	while (bestScore < 42000 && iterations < 30)
 	{
+		improved = false;
 		for (int p1 = 0; p1 < key_->GetLength(); p1++)
 		{
 			for (int p2 = 0; p2 < key_->GetLength(); p2++)
@@ -81,6 +82,8 @@ void Solver::Start()
 						bestScore = lastScore;
 						delete bestKey;
 						bestKey = new Key(*key_);
+						delete currentBestKey;
+						currentBestKey = new Key(*key_);
 					}
 					
 					if (score > currentBestScore)
@@ -100,19 +103,21 @@ void Solver::Start()
 				currentTolerance = 0;
 			}
 			
-			//tabu black magic
 			currentTabu++;
-			if (currentTabu >= 300 /* max tabu */)
+			if (currentTabu >= 3 /* max tabu */)
 			{
+				std::cout << "The plateau's clean, no dirt to be seen" << std::endl;
 				optimalTabu_.insert(currentBestKey->AsPlainText());
 				currentBestScore = -10000;
 				
 				if (rand() % 2)
 				{
+					std::cout << "Restart w/ random key" << std::endl;
 					key_->RandomShuffle(100);
 				}
 				else
 				{
+					std::cout << "Back to best key" << std::endl;
 					delete key_;
 					key_ = new Key(*bestKey);
 				}
@@ -122,7 +127,7 @@ void Solver::Start()
 		else
 		{
 			currentTolerance = 0;
-			currentTabu = 0; //whatever the fuck it is
+			currentTabu = 0;
 		}
 		key_->RandomShuffle(endIterationShuffles);
 		if (tempTabu_.find(key_->AsPlainText()) != std::end(tempTabu_) ||
@@ -141,7 +146,6 @@ void Solver::Start()
 		}
 		
 		tolerance = 0;
-		
 		iterations++;
 		std::cout << "Iteration " << iterations - 1 << " done with score " << lastScore << ", best is " << bestScore << std::endl;
 	} //end of hill climber loop
