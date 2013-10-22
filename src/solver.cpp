@@ -49,11 +49,8 @@ void Solver::Start()
 			for (int p2 = 0; p2 < key_->GetLength(); p2++)
 			{
 				if (!key_->Swap(p1, p2)) continue;
-				int score = CalculateScore(message_->Decrypt(*key_));				
+				int score = CalculateScore(message_->Decrypt(*key_));
 				
-				//TABU_STR_A would just assign key representation to a string
-				
-				//SET_SCORE starts here
 				if (tempTabu_.find(key_->AsPlainText()) != std::end(tempTabu_) ||
 					optimalTabu_.find(key_->AsPlainText()) != std::end(optimalTabu_))
 				{
@@ -64,10 +61,7 @@ void Solver::Start()
 				{
 					score = CalculateScore(message_->Decrypt(*key_));
 				}
-				//SET_SCORE ends here
-				tempTabu_.insert(key_->AsPlainText()); //insert copy of that key
-				//ADD_TEMP_TABU: inserts this key in temp_tabu. strange fucking way of doing it
-				// fuck's sake, I suspect the map is just being used as a hashmap
+				tempTabu_.insert(key_->AsPlainText());
 				
 				if (maxTolerance)
 				{
@@ -85,14 +79,14 @@ void Solver::Start()
 					{
 						improved = true;
 						bestScore = lastScore;
-						if (bestKey != nullptr) delete bestKey;
+						delete bestKey;
 						bestKey = new Key(*key_);
 					}
 					
 					if (score > currentBestScore)
 					{
 						currentBestScore = score;
-						if (currentBestKey != nullptr) delete currentBestKey;
+						delete currentBestKey;
 						currentBestKey = new Key(*key_);
 					}
 				}
@@ -119,7 +113,7 @@ void Solver::Start()
 				}
 				else
 				{
-					if (key_!= nullptr) delete key_;
+					delete key_;
 					key_ = new Key(*bestKey);
 				}
 				currentTabu = 0;
@@ -130,7 +124,7 @@ void Solver::Start()
 			currentTolerance = 0;
 			currentTabu = 0; //whatever the fuck it is
 		}
-		key_->RandomShuffle(endIterationShuffles); //info->swaps
+		key_->RandomShuffle(endIterationShuffles);
 		if (tempTabu_.find(key_->AsPlainText()) != std::end(tempTabu_) ||
 			optimalTabu_.find(key_->AsPlainText()) != std::end(optimalTabu_))
 		{
@@ -142,7 +136,6 @@ void Solver::Start()
 		}
 		
 		if ((rand() % 100) < tempClearProbability) { //CLEAR_TABU_PROB
-		//if (!(rand() % tempClearProbability)) {
 			std::cout << "Clearing temp" << std::endl;
 			tempTabu_.clear();
 		}
