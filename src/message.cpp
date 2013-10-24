@@ -3,6 +3,7 @@
 #include "key.h"
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -71,4 +72,14 @@ const std::string Message::Decrypt(Key &key) const
 	}
 	
 	return s;
+}
+
+std::vector<int> Message::DecryptInt(Key &key) const
+{
+	std::vector<int> v;
+	for (const char c : ciphertext_)
+	{
+		v.push_back(key.GetPlainSymbol(c));
+	}
+	return v;
 }

@@ -24,7 +24,7 @@ void Solver::SetKey(Key* key)
 
 void Solver::Start()
 {
-	int lastScore = CalculateScore(message_->Decrypt(*key_));
+	int lastScore = CalculateScore(message_->DecryptInt(*key_));
 	int bestScore = lastScore;
 	int currentBestScore = bestScore;
 	unsigned int iterations = 0;
@@ -40,7 +40,7 @@ void Solver::Start()
 	Key* bestKey = new Key(*key_);
 	Key* currentBestKey = new Key(*key_);
 
-	currentBestScore = bestScore = lastScore = CalculateScore(message_->Decrypt(*key_));
+	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(*key_));
 	
 	while (bestScore < 42000 && iterations < 30)
 	{
@@ -50,7 +50,7 @@ void Solver::Start()
 			for (int p2 = 0; p2 < key_->GetLength(); p2++)
 			{
 				if (!key_->Swap(p1, p2)) continue;
-				int score = CalculateScore(message_->Decrypt(*key_));
+				int score = CalculateScore(message_->DecryptInt(*key_));
 				
 				if (tempTabu_.find(key_->AsPlainText()) != std::end(tempTabu_) ||
 					optimalTabu_.find(key_->AsPlainText()) != std::end(optimalTabu_))
@@ -60,7 +60,7 @@ void Solver::Start()
 				}
 				else
 				{
-					score = CalculateScore(message_->Decrypt(*key_));
+					score = CalculateScore(message_->DecryptInt(*key_));
 				}
 				tempTabu_.insert(key_->AsPlainText());
 				
@@ -137,7 +137,7 @@ void Solver::Start()
 		}
 		else
 		{
-			lastScore = CalculateScore(message_->Decrypt(*key_));
+			lastScore = CalculateScore(message_->DecryptInt(*key_));
 		}
 		
 		if ((rand() % 100) < tempClearProbability) { //CLEAR_TABU_PROB
@@ -159,7 +159,7 @@ void Solver::Start()
 	
 }
 
-int Solver::CalculateScore(std::string plaintext)
+int Solver::CalculateScore(std::vector<int> plaintext)
 {
 	unsigned int score = 0;
 	unsigned int len = plaintext.size();
@@ -168,41 +168,52 @@ int Solver::CalculateScore(std::string plaintext)
 	unsigned int biscore, triscore, tetrascore, pentascore;
 	biscore = triscore = tetrascore = pentascore = 0;
 
-	char c1 = plaintext[0];
-	char c2 = plaintext[1];
-	char c3 = plaintext[2];
-	char c4 = plaintext[3];
-	char c5 = plaintext[4];
+	auto it = std::begin(plaintext);
 	
-	for (unsigned int i = 0; i < len - 1; i++)
+	//for (unsigned int i = 0; i < len - 1; i++)
+	while (it != std::end(plaintext))
 	{
-		std::string gram(1, plaintext[i]);
-		gram += plaintext[i + 1];
-		biscore += LanguageData::GetBigramFrequency(gram);
-		
-		if (remaining > 2) {
-		  gram += plaintext[i + 2];
-		  triscore += LanguageData::GetTrigramFrequency(gram);
+		std::string oldcrap;
+		int gram = *(it++); //1st
+		oldcrap = std::string(1, (char)(gram + 'A'));
+		if (it != std::end(plaintext)) {
+			char tmp = (*it) + 'A';
+			oldcrap += tmp;
+			gram *= 26;
+			gram += *(it++);
 		}
 		
-		if (remaining > 3) {
-		  gram += plaintext[i + 3];
-		  tetrascore += LanguageData::GetTetragramFrequency(gram);
+		std::cout << "Got bigram " << gram << std::endl;
+		std::cout << "Got bigram " << oldcrap << std::endl;
+		biscore += LanguageData::GetBigramFrequency(oldcrap);
+		
+		if (remaining > 2 && it != std::end(plaintext)) {
+			gram *= 26;
+			gram += *(it++);
+		  //std::cout << "From plaintext " << plaintext << std::endl;
+		  std::cout << "Got trigram " << gram << std::endl;
+		  //triscore += LanguageData::GetTrigramFrequency(gram);
+		  triscore += LanguageData::GetTri(gram);
 		}
 		
-		if (remaining > 4) {
-		  gram += plaintext[i + 4];
-		  pentascore += LanguageData::GetPentagramFrequency(gram); //hehe, pentagram
+		if (remaining > 3 && it != std::end(plaintext)) {
+			gram *= 26;
+			gram += *(it++);
+		  //std::cout << "Got tetra " << gram << std::endl;
+		  tetrascore += LanguageData::GetTetra(gram);
 		}
 		
-		c1 = c2;
-		c2 = c3;
-		c3 = c4;
-		c4 = c5;
-		c5 = plaintext[i + 5];
+		if (remaining > 4 && it != std::end(plaintext)) {
+			gram *= 26;
+			gram += *(it++);
+		  //std::cout << "Got pentagram " << gram << std::endl;
+		  pentascore += LanguageData::GetPenta(gram); //hehe, pentagram
+		}
+		
 		remaining--;
 	}
-	
+	//std::cout << "Reached once" << std::endl;
+	//delete c;
 	score = pentascore + (tetrascore >> 1) + (triscore >> 2) + (biscore >> 3);
 	
 	//update statistics
@@ -264,7 +275,7 @@ int Solver::CalculateScore(std::string plaintext)
 	return int(score * multiplier);
 }
 
-double Solver::GetDIoC(std::string& plaintext)
+double Solver::GetDIoC(std::vector<int> plaintext)
 {
 	#pragma GCC diagnostic push	
 	#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
@@ -276,8 +287,8 @@ double Solver::GetDIoC(std::string& plaintext)
 	
 	for (int i = 0; i < plaintext.size() - 1; i += 2)
 	{
-		int idx1 = plaintext[i] - 'A';
-		int idx2 = plaintext[i + 1] - 'A';
+		int idx1 = plaintext[i];
+		int idx2 = plaintext[i + 1];
 		freqs[idx1 * 26 + idx2]++;
 		count++;
 	}
@@ -296,5 +307,6 @@ double Solver::GetDIoC(std::string& plaintext)
 
 void Solver::TestScore(std::string& plaintext)
 {
-	std::cout << "Got " << CalculateScore(plaintext) << std::endl;
+	//shut up
+	//std::cout << "Got " << CalculateScore(plaintext) << std::endl;
 }

@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <algorithm>
 
-Key::Key() : map_(MapType()), length_(0)
+Key::Key() : map_(MapType()), length_(0), key_(std::unordered_map<char, int>())
 {}
 
 Key::Key(const Key& other) : map_(other.map_), length_(other.length_)
@@ -27,6 +27,7 @@ void Key::Init(const Message* message)
 	{
 		letterHomophones.insert(std::pair<char, int> (c, message->GuessNumberOfHomophones(c)));
 	}
+	length_ = message->GetFrequencyMap().size();
 	for (auto pair : message->GetFrequencyMap())
 	{
 		char guess = 0;
@@ -40,37 +41,38 @@ void Key::Init(const Message* message)
 			}
 		}
 		map_[pair.first] = guess;
+		int numericalGuess = static_cast<int>(guess) - 'A';
+		key_[pair.first] = numericalGuess;
 		i++;
 	}
-	length_ = map_.size();
+	//length_ = map_.size();
 }
 
-char Key::GetPlainSymbol(const char cipherSymbol) const
-{	
-	auto it = map_.find(cipherSymbol);
-	return it->second;
-}
-
-void Key::SetMapSymbol(const char cipherSymbol, const char plainSymbol)
+int Key::GetPlainSymbol(const char cipherSymbol) const
 {
-	map_[cipherSymbol] = plainSymbol;
+	return key_.find(cipherSymbol)->second;
+}
+
+void Key::SetMapSymbol(const char cipherSymbol, int plainSymbol)
+{
+	key_[cipherSymbol] = plainSymbol;
 }
 
 std::string Key::AsPlainText()
 {
 	std::string s = "";
-	for (auto pair : map_)
+	for (auto pair : key_)
 	{
-		s += pair.second;
+		s += std::to_string(pair.second);
 	}
 	return s;
 }
 
 void Key::PrintKey() const
 {
-	for (auto pair : map_)
+	for (auto pair : key_)
 	{
-		std::cout << pair.first << " : " << pair.second << std::endl;
+		std::cout << pair.first << " : " << pair.second << " " << static_cast<char>(pair.second + 'A') << std::endl;
 	}
 	std::cout << std::endl;
 }

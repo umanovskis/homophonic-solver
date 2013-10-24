@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_set>
 #include <memory>
+#include <vector>
 
 class Message;
 class Key;
@@ -14,8 +15,8 @@ private:
 	Message* message_;
 	Key* key_;
 	Key* bestKey_;
-	int CalculateScore(std::string plaintext);
-	double GetDIoC(std::string& plaintext);
+	int CalculateScore(std::vector<int> plaintext);
+	double GetDIoC(std::vector<int> plaintext);
 	std::unordered_set<std::string> tempTabu_;
 	std::unordered_set<std::string> optimalTabu_;
 	

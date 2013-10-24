@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 class Key;
 
@@ -23,6 +24,7 @@ public:
 	int GuessNumberOfHomophones(char c) const;
 	int GetUniformNumber() const;
 	const std::string Decrypt(Key& key) const;
+	std::vector<int> DecryptInt(Key &key) const;
 };
 
 #endif

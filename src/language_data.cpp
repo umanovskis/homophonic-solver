@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
+#include <vector>
 
 using namespace std;
 
@@ -662,6 +663,10 @@ namespace LanguageData
 	StringToIntMap expectedTetragrams;
 	StringToIntMap expectedPentagrams;
 	
+	std::array<int, 26 * 26 * 26> tri {};
+	std::array<int, 26 * 26 * 26 * 26> tetra {};
+	std::array<int, 26 * 26 * 26 * 26 * 26> penta {};
+	
 	double GetLetterFrequency(char c)
 	{
 		return expectedLetters[c];
@@ -701,13 +706,46 @@ namespace LanguageData
 		}
 	}
 	
+	void Populate(string filename, int* array)
+	{
+		ifstream ifs(filename);
+		string line;
+		while (getline(ifs, line))
+		{
+			istringstream iss(line);
+			int idx;
+			int n;
+			iss >> idx >> n;
+			array[idx] = n;
+		}
+	}
+	
+	int GetTri(int gram)
+	{		
+		return tri[gram];
+	}
+	
+	int GetTetra(int gram)
+	{
+		return tetra[gram];
+	}
+	
+	int GetPenta(int gram)
+	{
+		return penta[gram];
+	}
+	
 	void Initialize()
 	{
 		expectedTrigrams.reserve(8465);
 		expectedTetragrams.reserve(66686);
 		expectedPentagrams.reserve(263342);
-		PopulateNGrams("data/trigrams.txt", expectedTrigrams);
+		/*PopulateNGrams("data/trigrams.txt", expectedTrigrams);
 		PopulateNGrams("data/tetragrams.txt", expectedTetragrams);
-		PopulateNGrams("data/pentagrams.txt", expectedPentagrams);
+		PopulateNGrams("data/pentagrams.txt", expectedPentagrams);*/
+		
+		Populate("data/trigrams.txt", &tri[0]);
+		Populate("data/tetragrams.txt", &tetra[0]);
+		Populate("data/pentagrams.txt", &penta[0]);
 	}
 }
