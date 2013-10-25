@@ -155,7 +155,7 @@ void Solver::Start()
 	std::cout << "Best key is " << bestKey->AsPlainText() << std::endl;
 	std::cout << "Best score is " << bestScore << std::endl;
 	std::cout << "And it decrypts to" << std::endl;
-	std::cout << message_->Decrypt(*bestKey_);
+	std::cout << message_->DecryptAsString(*bestKey_);
 	
 }
 
@@ -183,37 +183,29 @@ int Solver::CalculateScore(std::vector<int> plaintext)
 			gram += *(it++);
 		}
 		
-		std::cout << "Got bigram " << gram << std::endl;
-		std::cout << "Got bigram " << oldcrap << std::endl;
 		biscore += LanguageData::GetBigramFrequency(oldcrap);
 		
-		if (remaining > 2 && it != std::end(plaintext)) {
+		if (it != std::end(plaintext)) {
 			gram *= 26;
 			gram += *(it++);
-		  //std::cout << "From plaintext " << plaintext << std::endl;
-		  std::cout << "Got trigram " << gram << std::endl;
-		  //triscore += LanguageData::GetTrigramFrequency(gram);
 		  triscore += LanguageData::GetTri(gram);
 		}
 		
-		if (remaining > 3 && it != std::end(plaintext)) {
+		if (it != std::end(plaintext)) {
 			gram *= 26;
 			gram += *(it++);
-		  //std::cout << "Got tetra " << gram << std::endl;
 		  tetrascore += LanguageData::GetTetra(gram);
 		}
 		
-		if (remaining > 4 && it != std::end(plaintext)) {
+		if (it != std::end(plaintext)) {
 			gram *= 26;
 			gram += *(it++);
-		  //std::cout << "Got pentagram " << gram << std::endl;
 		  pentascore += LanguageData::GetPenta(gram); //hehe, pentagram
 		}
 		
 		remaining--;
 	}
-	//std::cout << "Reached once" << std::endl;
-	//delete c;
+	//std::cout << "Scored " << pentascore << " " << (tetrascore >> 1) << " " << (triscore >> 2 ) << " " << (biscore >> 3) << std::endl;
 	score = pentascore + (tetrascore >> 1) + (triscore >> 2) + (biscore >> 3);
 	
 	//update statistics

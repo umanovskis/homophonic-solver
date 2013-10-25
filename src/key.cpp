@@ -8,7 +8,7 @@
 Key::Key() : map_(MapType()), length_(0), key_(std::unordered_map<char, int>())
 {}
 
-Key::Key(const Key& other) : map_(other.map_), length_(other.length_)
+Key::Key(const Key& other) : map_(other.map_), length_(other.length_), key_(other.key_)
 { }
 
 Key& Key::operator=(const Key& other)
@@ -28,7 +28,7 @@ void Key::Init(const Message* message)
 		letterHomophones.insert(std::pair<char, int> (c, message->GuessNumberOfHomophones(c)));
 	}
 	length_ = message->GetFrequencyMap().size();
-	for (auto pair : message->GetFrequencyMap())
+	for (auto &pair : message->GetFrequencyMap())
 	{
 		char guess = 0;
 		for (char c = 'A'; c <= 'Z'; c++)
@@ -40,6 +40,7 @@ void Key::Init(const Message* message)
 				break;
 			}
 		}
+		std::cout << "Freqmap " << pair.first << " is " << pair.second << std::endl;
 		map_[pair.first] = guess;
 		int numericalGuess = static_cast<int>(guess) - 'A';
 		key_[pair.first] = numericalGuess;
@@ -50,6 +51,11 @@ void Key::Init(const Message* message)
 
 int Key::GetPlainSymbol(const char cipherSymbol) const
 {
+	return key_.at(cipherSymbol);
+	if (key_.find(cipherSymbol) == std::end(key_))
+	{
+		return 0;
+	}
 	return key_.find(cipherSymbol)->second;
 }
 
@@ -84,8 +90,12 @@ int Key::GetLength() const
 
 bool Key::Swap(int p1, int p2)
 {
-	MapType::iterator it = map_.begin();
-	MapType::iterator it2 = map_.begin();
+	std::unordered_map<char, int>::iterator it = key_.begin();
+	std::unordered_map<char, int>::iterator it2 = key_.begin();
+	if (p1 > key_.size() || p2 > key_.size())
+	{
+		std::cout << "impossible " << key_.size() << std::endl;
+	}
 	if (p1 == p2) {
 		return false;
 	}

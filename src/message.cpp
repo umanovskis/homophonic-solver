@@ -74,6 +74,17 @@ const std::string Message::Decrypt(Key &key) const
 	return s;
 }
 
+const std::string Message::DecryptAsString(Key &key) const
+{
+	std::string s = "";
+	for (auto el : DecryptInt(key))
+	{
+		char c = (char)el + 'A';
+		s += c;
+	}
+	return s;
+}
+
 std::vector<int> Message::DecryptInt(Key &key) const
 {
 	std::vector<int> v;
