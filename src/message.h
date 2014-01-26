@@ -23,7 +23,6 @@ public:
 	void PrintFrequencyMap() const;
 	int GuessNumberOfHomophones(char c) const;
 	int GetUniformNumber() const;
-	const std::string Decrypt(Key& key) const;
 	const std::string DecryptAsString(Key &key) const;
 	std::vector<int> DecryptInt(Key &key) const;
 };

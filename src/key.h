@@ -10,7 +10,6 @@ class Key
 {
 private:
 	typedef std::unordered_map<char,char> MapType;
-	MapType map_;
 	int length_;
 	std::unordered_map<char, int> key_;
 public:
@@ -19,7 +18,7 @@ public:
 	int GetPlainSymbol(const char cipherSymbol) const;
 	void PrintKey() const;
 	int GetLength() const;
-    bool Swap(int p1, int p2);
+    bool Swap(size_t p1, size_t p2);
 	std::string AsPlainText();
 	void RandomShuffle(int times);
 	

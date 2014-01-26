@@ -30,7 +30,7 @@ void Solver::Start()
 	unsigned int iterations = 0;
 	const int maxTolerance = 40;
 	const int endIterationShuffles = 5;
-	const int tempClearProbability = 80;
+	const int tempClearProbability = 20;
 	
 	int tolerance = 0;
 	int currentTolerance = 0;
@@ -42,7 +42,7 @@ void Solver::Start()
 
 	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(*key_));
 	
-	while (bestScore < 42000 && iterations < 30)
+	while (bestScore < 42000 && iterations < 40)
 	{
 		improved = false;
 		for (int p1 = 0; p1 < key_->GetLength(); p1++)
@@ -82,8 +82,8 @@ void Solver::Start()
 						bestScore = lastScore;
 						delete bestKey;
 						bestKey = new Key(*key_);
-						delete currentBestKey;
-						currentBestKey = new Key(*key_);
+						//delete currentBestKey;
+						//currentBestKey = new Key(*key_);
 					}
 					
 					if (score > currentBestScore)
@@ -104,7 +104,7 @@ void Solver::Start()
 			}
 			
 			currentTabu++;
-			if (currentTabu >= 3 /* max tabu */)
+			if (currentTabu >= 5 /* max tabu */)
 			{
 				std::cout << "The plateau's clean, no dirt to be seen" << std::endl;
 				optimalTabu_.insert(currentBestKey->AsPlainText());
@@ -137,6 +137,15 @@ void Solver::Start()
 		}
 		else
 		{
+			/*key_->SetMapSymbol('9', 8);
+			key_->SetMapSymbol('%', 11);
+			key_->SetMapSymbol('P', 8);
+			key_->SetMapSymbol('/', 10);
+			key_->SetMapSymbol('Z', 4);
+			key_->SetMapSymbol('U', 8);
+			key_->SetMapSymbol('B', 11);
+			key_->SetMapSymbol('k', 8); 
+			key_->SetMapSymbol('O', 13);*/
 			lastScore = CalculateScore(message_->DecryptInt(*key_));
 		}
 		
@@ -147,7 +156,7 @@ void Solver::Start()
 		
 		tolerance = 0;
 		iterations++;
-		std::cout << "Iteration " << iterations - 1 << " done with score " << lastScore << ", best is " << bestScore << std::endl;
+		std::cout << "Iteration " << iterations - 1 << " done with score " << currentBestScore << ", best is " << bestScore << std::endl;
 	} //end of hill climber loop
 	bestKey_ = bestKey;
 
@@ -162,8 +171,6 @@ void Solver::Start()
 int Solver::CalculateScore(std::vector<int> plaintext)
 {
 	unsigned int score = 0;
-	unsigned int len = plaintext.size();
-	unsigned int remaining = len;
 	
 	unsigned int biscore, triscore, tetrascore, pentascore;
 	biscore = triscore = tetrascore = pentascore = 0;
@@ -171,42 +178,44 @@ int Solver::CalculateScore(std::vector<int> plaintext)
 	auto it = std::begin(plaintext);
 	
 	//for (unsigned int i = 0; i < len - 1; i++)
+	size_t remaining = plaintext.size();
 	while (it != std::end(plaintext))
 	{
 		std::string oldcrap;
 		int gram = *(it++); //1st
+		auto it2 = it;
 		oldcrap = std::string(1, (char)(gram + 'A'));
-		if (it != std::end(plaintext)) {
-			char tmp = (*it) + 'A';
+		if (remaining > 1 || it2 != std::end(plaintext)) {
+			char tmp = (*it2) + 'A';
 			oldcrap += tmp;
 			gram *= 26;
-			gram += *(it++);
+			gram += *(it2++);
 		}
 		
-		biscore += LanguageData::GetBigramFrequency(oldcrap);
+		biscore += LanguageData::GetBigramFrequency(gram);
 		
-		if (it != std::end(plaintext)) {
+		if (remaining > 2 || it2 != std::end(plaintext)) {
 			gram *= 26;
-			gram += *(it++);
-		  triscore += LanguageData::GetTri(gram);
+			gram += *(it2++);
+			triscore += LanguageData::GetTri(gram);
 		}
 		
-		if (it != std::end(plaintext)) {
+		if (remaining > 3 || it2 != std::end(plaintext)) {
 			gram *= 26;
-			gram += *(it++);
-		  tetrascore += LanguageData::GetTetra(gram);
+			gram += *(it2++);
+			tetrascore += LanguageData::GetTetra(gram);
 		}
 		
-		if (it != std::end(plaintext)) {
+		if (remaining > 4 || it2 != std::end(plaintext)) {
 			gram *= 26;
-			gram += *(it++);
-		  pentascore += LanguageData::GetPenta(gram); //hehe, pentagram
+			gram += *(it2++);
+			pentascore += LanguageData::GetPenta(gram); //hehe, pentagram
 		}
-		
 		remaining--;
 	}
 	//std::cout << "Scored " << pentascore << " " << (tetrascore >> 1) << " " << (triscore >> 2 ) << " " << (biscore >> 3) << std::endl;
 	score = pentascore + (tetrascore >> 1) + (triscore >> 2) + (biscore >> 3);
+	//score = pentascore + (tetrascore) + (triscore) + (biscore);
 	
 	//update statistics
 	
@@ -217,9 +226,9 @@ int Solver::CalculateScore(std::vector<int> plaintext)
 	std::array<int, 26> freqs {};
 #pragma GCC diagnostic pop
 	int unique = 0;
-	for (int i = 0; i < plaintext.size(); i++)
+	for (size_t i = 0; i < plaintext.size(); i++)
 	{
-		int idx = plaintext[i] - 'A';
+		int idx = plaintext[i];
 		if (!freqs[idx])
 		{
 			unique++;
@@ -259,10 +268,10 @@ int Solver::CalculateScore(std::vector<int> plaintext)
 	
 	
 	double multiplier = 1.0;
-	multiplier *= 1.05 - (5 * abs(ioc - LanguageData::EnglishIoC));
-	multiplier *= 1.05 - ((5 >> 1) * abs(dioc - LanguageData::EnglishDIoC));
-	multiplier *= 1.05 - (5 * abs(chi2 - LanguageData::EnglishChi2)) / 60.0;
-	multiplier *= 1.05 - (5 * abs(entropy - LanguageData::EnglishEntropy)) / 150.0;
+	multiplier *= 1.05 - (5 * std::abs(ioc - LanguageData::EnglishIoC));
+	multiplier *= 1.05 - ((5 >> 1) * std::abs(dioc - LanguageData::EnglishDIoC));
+	multiplier *= 1.05 - (5 * std::abs(chi2 - LanguageData::EnglishChi2)) / 60.0;
+	multiplier *= 1.05 - (5 * std::abs(entropy - LanguageData::EnglishEntropy)) / 150.0;
 	
 	return int(score * multiplier);
 }
@@ -277,14 +286,14 @@ double Solver::GetDIoC(std::vector<int> plaintext)
 	double dioc = 0;
 	int count = 0;
 	
-	for (int i = 0; i < plaintext.size() - 1; i += 2)
+	for (size_t i = 0; i < plaintext.size() - 1; i += 2)
 	{
 		int idx1 = plaintext[i];
 		int idx2 = plaintext[i + 1];
 		freqs[idx1 * 26 + idx2]++;
 		count++;
 	}
-	for (int i = 0; i < freqs.size(); i++)
+	for (size_t i = 0; i < freqs.size(); i++)
 	{
 		if(freqs[i] > 1)
 		{

@@ -10,7 +10,7 @@ namespace LanguageData
 	typedef std::unordered_map<char, double> CharToDoubleMap;
 	typedef std::unordered_map<std::string, int> StringToIntMap;
 	double GetLetterFrequency(char c);
-	int GetBigramFrequency(std::string bigram);
+	int GetBigramFrequency(int gram);
 	int GetTrigramFrequency(std::string trigram);
 	int GetTetragramFrequency(std::string tetragram);
 	int GetPentagramFrequency(std::string pentagram);

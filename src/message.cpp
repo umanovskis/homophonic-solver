@@ -63,17 +63,6 @@ int Message::GetUniformNumber() const
 	return uniform_;
 }
 
-const std::string Message::Decrypt(Key &key) const
-{
-	string s = string();
-	for (const char c : ciphertext_)
-	{
-		s += key.GetPlainSymbol(c);
-	}
-	
-	return s;
-}
-
 const std::string Message::DecryptAsString(Key &key) const
 {
 	std::string s = "";
