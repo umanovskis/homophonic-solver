@@ -181,13 +181,9 @@ int Solver::CalculateScore(std::vector<int> plaintext)
 	size_t remaining = plaintext.size();
 	while (it != std::end(plaintext))
 	{
-		std::string oldcrap;
 		int gram = *(it++); //1st
 		auto it2 = it;
-		oldcrap = std::string(1, (char)(gram + 'A'));
 		if (remaining > 1 || it2 != std::end(plaintext)) {
-			char tmp = (*it2) + 'A';
-			oldcrap += tmp;
 			gram *= 26;
 			gram += *(it2++);
 		}
