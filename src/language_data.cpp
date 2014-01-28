@@ -658,10 +658,13 @@ namespace LanguageData
 	  {674, 45},
 	  {675, 55}
 	};
-		
+	
+#pragma GCC diagnostic push	
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"	
 	std::array<int, 26 * 26 * 26> tri {};
 	std::array<int, 26 * 26 * 26 * 26> tetra {};
 	std::array<int, 26 * 26 * 26 * 26 * 26> penta {};
+#pragma GCC diagnostic pop
 	
 	double GetLetterFrequency(char c)
 	{

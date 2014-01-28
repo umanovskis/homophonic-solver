@@ -30,7 +30,7 @@ void Solver::Start()
 	unsigned int iterations = 0;
 	const int maxTolerance = 40;
 	const int endIterationShuffles = 5;
-	const int tempClearProbability = 20;
+	const int tempClearProbability = 80;
 	
 	int tolerance = 0;
 	int currentTolerance = 0;
@@ -42,9 +42,10 @@ void Solver::Start()
 
 	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(*key_));
 	
-	while (bestScore < 42000 && iterations < 40)
+	while (bestScore < 45000 && iterations < 80)
 	{
 		improved = false;
+		calcCalls = 0;
 		for (int p1 = 0; p1 < key_->GetLength(); p1++)
 		{
 			for (int p2 = 0; p2 < key_->GetLength(); p2++)
@@ -60,7 +61,7 @@ void Solver::Start()
 				}
 				else
 				{
-					score = CalculateScore(message_->DecryptInt(*key_));
+					//score = CalculateScore(message_->DecryptInt(*key_));
 				}
 				tempTabu_.insert(key_->AsPlainText());
 				
@@ -157,6 +158,7 @@ void Solver::Start()
 		tolerance = 0;
 		iterations++;
 		std::cout << "Iteration " << iterations - 1 << " done with score " << currentBestScore << ", best is " << bestScore << std::endl;
+		std::cout << "Calculate called " << calcCalls << " times" << std::endl;
 	} //end of hill climber loop
 	bestKey_ = bestKey;
 
@@ -168,26 +170,23 @@ void Solver::Start()
 	
 }
 
-int Solver::CalculateScore(std::vector<int> plaintext)
+int Solver::CalculateScore(std::unique_ptr<std::vector <int>> plaintextPtr)
 {
 	unsigned int score = 0;
+	calcCalls++;
 	
 	unsigned int biscore, triscore, tetrascore, pentascore;
 	biscore = triscore = tetrascore = pentascore = 0;
+	std::vector <int>& plaintext = *(plaintextPtr.get());
 
 	auto it = std::begin(plaintext);
 	
-	//for (unsigned int i = 0; i < len - 1; i++)
 	size_t remaining = plaintext.size();
 	while (it != std::end(plaintext))
 	{
-		std::string oldcrap;
 		int gram = *(it++); //1st
 		auto it2 = it;
-		oldcrap = std::string(1, (char)(gram + 'A'));
 		if (remaining > 1 || it2 != std::end(plaintext)) {
-			char tmp = (*it2) + 'A';
-			oldcrap += tmp;
 			gram *= 26;
 			gram += *(it2++);
 		}
