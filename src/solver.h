@@ -15,15 +15,13 @@ private:
 	Message* message_;
 	Key* key_;
 	Key* bestKey_;
-	int CalculateScore(std::unique_ptr<std::vector <int>> plaintextPtr);
+	int CalculateScore(std::vector<int> plaintext);
 	double GetDIoC(std::vector<int> plaintext);
 	std::unordered_set<std::string> tempTabu_;
 	std::unordered_set<std::string> optimalTabu_;
 	
 	Solver(const Solver&) = delete;
 	Solver& operator=(const Solver&) = delete;
-	
-	int calcCalls;
 public:
 	Solver();
 	Solver(Message* message, Key* key);

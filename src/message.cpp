@@ -3,6 +3,7 @@
 #include "key.h"
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -65,8 +66,7 @@ int Message::GetUniformNumber() const
 const std::string Message::DecryptAsString(Key &key) const
 {
 	std::string s = "";
-	std::vector<int> dec = *(DecryptInt(key).get());
-	for (auto el : dec)
+	for (auto el : DecryptInt(key))
 	{
 		char c = (char)el + 'A';
 		s += c;
@@ -74,12 +74,12 @@ const std::string Message::DecryptAsString(Key &key) const
 	return s;
 }
 
-unique_ptr<std::vector<int>> Message::DecryptInt(Key &key) const
+std::vector<int> Message::DecryptInt(Key &key) const
 {
-	unique_ptr<std::vector <int>> v = unique_ptr<std::vector <int>>(new std::vector<int>(key.GetLength()));
+	std::vector<int> v;
 	for (const char c : ciphertext_)
 	{
-		v.get()->push_back(key.GetPlainSymbol(c));
+		v.push_back(key.GetPlainSymbol(c));
 	}
 	return v;
 }
