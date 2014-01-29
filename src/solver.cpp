@@ -260,19 +260,19 @@ int Solver::CalculateScore(std::vector<int> plaintext)
 	chi2 /= plaintext.size();
 	entropy *= -1;
 	
-	double dioc = GetDIoC(plaintext);
+	double dioc = 0.0; //GetDIoC(plaintext);
 	
 	
 	double multiplier = 1.0;
 	multiplier *= 1.05 - (5 * std::abs(ioc - LanguageData::EnglishIoC));
-	multiplier *= 1.05 - ((5 >> 1) * std::abs(dioc - LanguageData::EnglishDIoC));
+	//multiplier *= 1.05 - ((5 >> 1) * std::abs(dioc - LanguageData::EnglishDIoC));
 	multiplier *= 1.05 - (5 * std::abs(chi2 - LanguageData::EnglishChi2)) / 60.0;
 	multiplier *= 1.05 - (5 * std::abs(entropy - LanguageData::EnglishEntropy)) / 150.0;
 	
 	return int(score * multiplier);
 }
 
-double Solver::GetDIoC(std::vector<int> plaintext)
+double Solver::GetDIoC(std::vector<int>& plaintext)
 {
 	#pragma GCC diagnostic push	
 	#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
@@ -298,7 +298,7 @@ double Solver::GetDIoC(std::vector<int> plaintext)
 	}
 	
 	dioc /= count * (count - 1);
-	
+	std::cout << "DIOC count is " << count << std::endl;
 	return dioc;
 }
 
