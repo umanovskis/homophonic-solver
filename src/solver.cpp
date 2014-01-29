@@ -37,8 +37,8 @@ void Solver::Start()
 	bool improved = false;
 	int currentTabu = 0;
 	
-	Key* bestKey = new Key(key_);
-	Key* currentBestKey = new Key(key_);
+	Key bestKey(key_);
+	Key currentBestKey(key_);
 
 	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(key_));
 	
@@ -80,17 +80,13 @@ void Solver::Start()
 					{
 						improved = true;
 						bestScore = lastScore;
-						delete bestKey;
-						bestKey = new Key(key_);
-						//delete currentBestKey;
-						//currentBestKey = new Key(*key_);
+						bestKey = key_;
 					}
 					
 					if (score > currentBestScore)
 					{
 						currentBestScore = score;
-						delete currentBestKey;
-						currentBestKey = new Key(key_);
+						currentBestKey = key_;
 					}
 				}
 			}
@@ -107,7 +103,7 @@ void Solver::Start()
 			if (currentTabu >= 300 /* max tabu */)
 			{
 				std::cout << "The plateau's clean, no dirt to be seen" << std::endl;
-				optimalTabu_.insert(currentBestKey->AsPlainText());
+				optimalTabu_.insert(currentBestKey.AsPlainText());
 				currentBestScore = -10000;
 				
 				if (rand() % 2)
@@ -118,7 +114,7 @@ void Solver::Start()
 				else
 				{
 					std::cout << "Back to best key" << std::endl;
-					key_ = *bestKey;
+					key_ = bestKey;
 				}
 				currentTabu = 0;
 			}
@@ -157,13 +153,12 @@ void Solver::Start()
 		iterations++;
 		std::cout << "Iteration " << iterations - 1 << " done with score " << currentBestScore << ", best is " << bestScore << std::endl;
 	} //end of hill climber loop
-	bestKey_ = bestKey;
 
 	std::cout << iterations << " iterations completed" << std::endl;
-	std::cout << "Best key is " << bestKey->AsPlainText() << std::endl;
+	std::cout << "Best key is " << bestKey.AsPlainText() << std::endl;
 	std::cout << "Best score is " << bestScore << std::endl;
 	std::cout << "And it decrypts to" << std::endl;
-	std::cout << message_->DecryptAsString(*bestKey_);
+	std::cout << message_->DecryptAsString(bestKey);
 	
 }
 
