@@ -30,7 +30,7 @@ void Solver::Start()
 	unsigned int iterations = 0;
 	const int maxTolerance = 40;
 	const int endIterationShuffles = 5;
-	const int tempClearProbability = 20;
+	const int tempClearProbability = 80;
 	
 	int tolerance = 0;
 	int currentTolerance = 0;
@@ -42,7 +42,7 @@ void Solver::Start()
 
 	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(*key_));
 	
-	while (bestScore < 42000 && iterations < 40)
+	while (bestScore < 42000 && iterations < 80)
 	{
 		improved = false;
 		for (int p1 = 0; p1 < key_->GetLength(); p1++)
@@ -104,7 +104,7 @@ void Solver::Start()
 			}
 			
 			currentTabu++;
-			if (currentTabu >= 5 /* max tabu */)
+			if (currentTabu >= 300 /* max tabu */)
 			{
 				std::cout << "The plateau's clean, no dirt to be seen" << std::endl;
 				optimalTabu_.insert(currentBestKey->AsPlainText());
