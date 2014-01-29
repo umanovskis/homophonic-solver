@@ -77,7 +77,6 @@ const std::string Message::DecryptAsString(Key &key) const
 std::vector<int> Message::DecryptInt(Key &key) const
 {
 	std::vector<int> v;
-	return v;
 	v.reserve(ciphertext_.size());
 	for (const char &c : ciphertext_)
 	{
