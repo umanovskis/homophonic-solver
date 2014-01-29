@@ -9,6 +9,7 @@
 #include "key.h"
 #include "language_data.h"
 
+static inline float fastlog (float x);
 
 Solver::Solver(Message* message, Key &key) : message_(message), key_(key), bestKey_(nullptr),
 											tempTabu_(std::unordered_set<std::string>()), 
@@ -42,7 +43,7 @@ void Solver::Start()
 
 	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(key_));
 	
-	while (bestScore < 42000 && iterations < 80)
+	while (bestScore < 42000 && iterations < 35)
 	{
 		improved = false;
 		for (int p1 = 0; p1 < key_.GetLength(); p1++)
@@ -60,7 +61,6 @@ void Solver::Start()
 				}
 				else
 				{
-					score = CalculateScore(message_->DecryptInt(key_));
 				}
 				tempTabu_.insert(key_.AsPlainText());
 				
@@ -132,15 +132,6 @@ void Solver::Start()
 		}
 		else
 		{
-			/*key_->SetMapSymbol('9', 8);
-			key_->SetMapSymbol('%', 11);
-			key_->SetMapSymbol('P', 8);
-			key_->SetMapSymbol('/', 10);
-			key_->SetMapSymbol('Z', 4);
-			key_->SetMapSymbol('U', 8);
-			key_->SetMapSymbol('B', 11);
-			key_->SetMapSymbol('k', 8); 
-			key_->SetMapSymbol('O', 13);*/
 			lastScore = CalculateScore(message_->DecryptInt(key_));
 		}
 		
@@ -171,7 +162,6 @@ int Solver::CalculateScore(const std::vector<int>& plaintext)
 
 	auto it = std::begin(plaintext);
 	
-	//for (unsigned int i = 0; i < len - 1; i++)
 	size_t remaining = plaintext.size();
 	while (it != std::end(plaintext))
 	{
@@ -226,8 +216,8 @@ int Solver::CalculateScore(const std::vector<int>& plaintext)
 		freqs[idx]++;
 	}
 	double probMass = (double)plaintext.size() / unique;
-	double entropy = 0.0;
-	double entropyProb = 0.0;
+	float entropy = 0.0;
+	float entropyProb = 0.0;
 	double ioc = 0.0;
 	double chi2 = 0.0;
 	double chiTemp = 0.0;
@@ -240,8 +230,8 @@ int Solver::CalculateScore(const std::vector<int>& plaintext)
 		
 		if (freqs[i])
 		{
-			entropyProb = (double)freqs[i] / plaintext.size();
-			entropy += entropyProb * (std::log(entropyProb) / std::log(2));
+			entropyProb = freqs[i] / plaintext.size();
+			entropy += entropyProb * (fastlog(entropyProb) / std::log(2));
 
 			chiTemp = freqs[i] - probMass;
 			chiTemp *= chiTemp;
@@ -300,4 +290,13 @@ void Solver::TestScore(std::string& plaintext)
 {
 	//shut up
 	//std::cout << "Got " << CalculateScore(plaintext) << std::endl;
+}
+
+// Using this over std::log does on average save about 0.05s per run
+static inline float fastlog (float x)
+{  
+  union { float f; uint32_t i; } vx = { x };
+  float y = vx.i;
+  y *= 8.2629582881927490e-8f;
+  return y - 87.989971088f;
 }

@@ -8,7 +8,6 @@
 namespace LanguageData
 {	
 	typedef std::unordered_map<char, double> CharToDoubleMap;
-	typedef std::unordered_map<std::string, int> StringToIntMap;
 	double GetLetterFrequency(char c);
 	int GetBigramFrequency(int gram);
 	int GetTrigramFrequency(std::string trigram);

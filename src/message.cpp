@@ -77,8 +77,9 @@ const std::string Message::DecryptAsString(Key &key) const
 std::vector<int> Message::DecryptInt(Key &key) const
 {
 	std::vector<int> v;
+	return v;
 	v.reserve(ciphertext_.size());
-	for (const char c : ciphertext_)
+	for (const char &c : ciphertext_)
 	{
 		v.push_back(key.GetPlainSymbol(c));
 	}

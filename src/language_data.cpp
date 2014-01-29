@@ -673,32 +673,16 @@ namespace LanguageData
 		return expectedBigrams[gram];
 	}
 	
-	void PopulateNGrams(string filename, StringToIntMap& m)
-	{
-		ifstream ifs(filename);
-		string line;
-		while (getline(ifs, line))
-		{
-			istringstream iss(line);
-			int n;
-			string s;
-			iss >> s >> n;
-			m[s] = n;
-		}
-	}
-	
 	void Populate(string filename, int* array)
 	{
 		ifstream ifs(filename);
 		string line;
-		while (getline(ifs, line))
-		{
-			istringstream iss(line);
-			int idx;
-			int n;
-			iss >> idx >> n;
-			array[idx] = n;
+		FILE* f = fopen(filename.c_str(), "r");
+		int idx, val;
+		while (fscanf(f, "%d %d", &idx, &val) != EOF) {
+		  array[idx] = val;
 		}
+		fclose(f);
 	}
 	
 	int GetTri(int gram)
