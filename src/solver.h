@@ -5,15 +5,16 @@
 #include <unordered_set>
 #include <memory>
 #include <vector>
+#include "key.h"
 
 class Message;
-class Key;
+//class Key;
 
 class Solver
 {
 private:
 	Message* message_;
-	Key* key_;
+	Key key_;
 	Key* bestKey_;
 	int CalculateScore(const std::vector<int>& plaintext);
 	double GetDIoC(std::vector<int>& plaintext);
@@ -24,8 +25,8 @@ private:
 	Solver& operator=(const Solver&) = delete;
 public:
 	Solver();
-	Solver(Message* message, Key* key);
-	void SetKey(Key* key);
+	Solver(Message* message, Key &key);
+	void SetKey(Key &key);
 	void Start();
 	void TestScore(std::string& plaintext);
 };

@@ -10,21 +10,21 @@
 #include "language_data.h"
 
 
-Solver::Solver(Message* message, Key* key) : message_(message), key_(key), bestKey_(nullptr),
+Solver::Solver(Message* message, Key &key) : message_(message), key_(key), bestKey_(nullptr),
 											tempTabu_(std::unordered_set<std::string>()), 
 											optimalTabu_((std::unordered_set<std::string>()))
 {
 	srand(time(nullptr));
 }
 
-void Solver::SetKey(Key* key)
+void Solver::SetKey(Key &key)
 {
 	key_ = key;
 }
 
 void Solver::Start()
 {
-	int lastScore = CalculateScore(message_->DecryptInt(*key_));
+	int lastScore = CalculateScore(message_->DecryptInt(key_));
 	int bestScore = lastScore;
 	int currentBestScore = bestScore;
 	unsigned int iterations = 0;
@@ -37,32 +37,32 @@ void Solver::Start()
 	bool improved = false;
 	int currentTabu = 0;
 	
-	Key* bestKey = new Key(*key_);
-	Key* currentBestKey = new Key(*key_);
+	Key* bestKey = new Key(key_);
+	Key* currentBestKey = new Key(key_);
 
-	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(*key_));
+	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(key_));
 	
 	while (bestScore < 42000 && iterations < 80)
 	{
 		improved = false;
-		for (int p1 = 0; p1 < key_->GetLength(); p1++)
+		for (int p1 = 0; p1 < key_.GetLength(); p1++)
 		{
-			for (int p2 = 0; p2 < key_->GetLength(); p2++)
+			for (int p2 = 0; p2 < key_.GetLength(); p2++)
 			{
-				if (!key_->Swap(p1, p2)) continue;
-				int score = CalculateScore(message_->DecryptInt(*key_));
+				if (!key_.Swap(p1, p2)) continue;
+				int score = CalculateScore(message_->DecryptInt(key_));
 				
-				if (tempTabu_.find(key_->AsPlainText()) != std::end(tempTabu_) ||
-					optimalTabu_.find(key_->AsPlainText()) != std::end(optimalTabu_))
+				if (tempTabu_.find(key_.AsPlainText()) != std::end(tempTabu_) ||
+					optimalTabu_.find(key_.AsPlainText()) != std::end(optimalTabu_))
 				{
 					//std::cout << "Blacklisted " << std::endl;
 					score = -10000;
 				}
 				else
 				{
-					score = CalculateScore(message_->DecryptInt(*key_));
+					score = CalculateScore(message_->DecryptInt(key_));
 				}
-				tempTabu_.insert(key_->AsPlainText());
+				tempTabu_.insert(key_.AsPlainText());
 				
 				if (maxTolerance)
 				{
@@ -71,7 +71,7 @@ void Solver::Start()
 				
 				if (score < lastScore - tolerance)
 				{
-					key_->Swap(p1, p2); //undo last swap
+					key_.Swap(p1, p2); //undo last swap
 				}
 				else
 				{
@@ -81,7 +81,7 @@ void Solver::Start()
 						improved = true;
 						bestScore = lastScore;
 						delete bestKey;
-						bestKey = new Key(*key_);
+						bestKey = new Key(key_);
 						//delete currentBestKey;
 						//currentBestKey = new Key(*key_);
 					}
@@ -90,7 +90,7 @@ void Solver::Start()
 					{
 						currentBestScore = score;
 						delete currentBestKey;
-						currentBestKey = new Key(*key_);
+						currentBestKey = new Key(key_);
 					}
 				}
 			}
@@ -113,13 +113,12 @@ void Solver::Start()
 				if (rand() % 2)
 				{
 					std::cout << "Restart w/ random key" << std::endl;
-					key_->RandomShuffle(100);
+					key_.RandomShuffle(100);
 				}
 				else
 				{
 					std::cout << "Back to best key" << std::endl;
-					delete key_;
-					key_ = new Key(*bestKey);
+					key_ = *bestKey;
 				}
 				currentTabu = 0;
 			}
@@ -129,9 +128,9 @@ void Solver::Start()
 			currentTolerance = 0;
 			currentTabu = 0;
 		}
-		key_->RandomShuffle(endIterationShuffles);
-		if (tempTabu_.find(key_->AsPlainText()) != std::end(tempTabu_) ||
-			optimalTabu_.find(key_->AsPlainText()) != std::end(optimalTabu_))
+		key_.RandomShuffle(endIterationShuffles);
+		if (tempTabu_.find(key_.AsPlainText()) != std::end(tempTabu_) ||
+			optimalTabu_.find(key_.AsPlainText()) != std::end(optimalTabu_))
 		{
 			lastScore = -10000;
 		}
@@ -146,7 +145,7 @@ void Solver::Start()
 			key_->SetMapSymbol('B', 11);
 			key_->SetMapSymbol('k', 8); 
 			key_->SetMapSymbol('O', 13);*/
-			lastScore = CalculateScore(message_->DecryptInt(*key_));
+			lastScore = CalculateScore(message_->DecryptInt(key_));
 		}
 		
 		if ((rand() % 100) < tempClearProbability) { //CLEAR_TABU_PROB

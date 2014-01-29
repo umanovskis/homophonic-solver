@@ -28,8 +28,8 @@ int main(int argc, char **argv) {
 	LanguageData::Initialize();
 	
 	Message* msg = new Message(str);
-	Key* key = new Key();
-	key->Init(msg);
+	Key key;
+	key.Init(msg);
 	cout << LanguageData::GetLetterFrequency('A') << endl;
 	/*cout << "WLE (59): " << LanguageData::GetTrigramFrequency("WLE") << endl;
 	cout << "ATOK (13): " << LanguageData::GetTetragramFrequency("ATOK") << endl;
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 	std::string testmsg2 = "INADEDITNSLLFEAFTEHECAUSIITARSOMUCHNUTITSUMOAEKUBRHINDINTALLWINGLEMESTTHENORCESTHECOUREMABISTHIMAORDINLEATUEELOMATOKINTTODANTRAMETHITLLSVESMETHEMOORTHRINTABLEPFICENCEITSSEVELHETREATHETLITTIBLYOURCOCDRANKWARHOLIANTHEHESTFARTONSRIOTHEEWHENADIESWINTHECEHOALATFIREGICIUBDANNTHESHIVEDINNEGWANTHECAMEMYSNOVERIWITNLORLIVEYOUMYTIMEHECAUSEYOUWINNTAYTOSTAIDAWBOCUTOFMYCONNICRALLAKSNAVERNOAMYONTERTAKEIHEARIETIMETHHFITS";
 	
 	Solver* solver = new Solver(msg, key);
-	key->PrintKey();
+	key.PrintKey();
 	/*solver->TestScore(testmsg);
 	solver->TestScore(testmsg2);
 	return 0;*/
