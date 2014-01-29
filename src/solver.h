@@ -15,7 +15,7 @@ private:
 	Message* message_;
 	Key* key_;
 	Key* bestKey_;
-	int CalculateScore(std::vector<int> plaintext);
+	int CalculateScore(const std::vector<int>& plaintext);
 	double GetDIoC(std::vector<int>& plaintext);
 	std::unordered_set<std::string> tempTabu_;
 	std::unordered_set<std::string> optimalTabu_;

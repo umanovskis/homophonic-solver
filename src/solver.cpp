@@ -168,7 +168,7 @@ void Solver::Start()
 	
 }
 
-int Solver::CalculateScore(std::vector<int> plaintext)
+int Solver::CalculateScore(const std::vector<int>& plaintext)
 {
 	unsigned int score = 0;
 	
