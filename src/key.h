@@ -13,7 +13,7 @@ private:
 	int length_;
 	std::unordered_map<char, int> key_;
 public:
-	void Init(const Message* message);
+	void Init(const Message& message);
 	void SetMapSymbol(const char cipherSymbol, int plainSymbol);
 	int GetPlainSymbol(const char cipherSymbol) const;
 	void PrintKey() const;

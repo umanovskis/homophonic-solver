@@ -19,14 +19,14 @@ Key& Key::operator=(const Key& other)
 	return *this;
 }
 
-void Key::Init(const Message* message)
+void Key::Init(const Message& message)
 {
 	std::map<char, int> letterHomophones;
 	for (char c = 'A'; c <= 'Z'; c++)
 	{
-		letterHomophones.insert(std::pair<char, int> (c, message->GuessNumberOfHomophones(c)));
+		letterHomophones.insert(std::pair<char, int> (c, message.GuessNumberOfHomophones(c)));
 	}
-	for (auto &pair : message->GetFrequencyMap())
+	for (auto &pair : message.GetFrequencyMap())
 	{
 		char guess = 0;
 		for (char c = 'A'; c <= 'Z'; c++)
@@ -41,7 +41,7 @@ void Key::Init(const Message* message)
 		int numericalGuess = static_cast<int>(guess) - 'A';
 		key_[pair.first] = numericalGuess;
 	}
-	length_ = message->GetFrequencyMap().size();
+	length_ = message.GetFrequencyMap().size();
 }
 
 int Key::GetPlainSymbol(const char cipherSymbol) const

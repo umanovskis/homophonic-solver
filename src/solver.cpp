@@ -11,7 +11,7 @@
 
 static inline float fastlog (float x);
 
-Solver::Solver(Message* message, Key &key) : message_(message), key_(key), bestKey_(nullptr),
+Solver::Solver(const Message& message, Key &key) : message_(message), key_(key), bestKey_(Key()),
 											tempTabu_(std::unordered_set<std::string>()), 
 											optimalTabu_((std::unordered_set<std::string>()))
 {
@@ -23,25 +23,26 @@ void Solver::SetKey(Key &key)
 	key_ = key;
 }
 
-void Solver::Start()
+int Solver::Start()
 {
-	int lastScore = CalculateScore(message_->DecryptInt(key_));
+	int lastScore = CalculateScore(message_.DecryptInt(key_));
 	int bestScore = lastScore;
 	int currentBestScore = bestScore;
 	unsigned int iterations = 0;
 	const int maxTolerance = 40;
 	const int endIterationShuffles = 5;
 	const int tempClearProbability = 80;
+	const int iterationsBeforeReset = 300;
 	
 	int tolerance = 0;
 	int currentTolerance = 0;
 	bool improved = false;
-	int currentTabu = 0;
+	int unimprovedIterations = 0;
 	
 	Key bestKey(key_);
 	Key currentBestKey(key_);
 
-	currentBestScore = bestScore = lastScore = CalculateScore(message_->DecryptInt(key_));
+	currentBestScore = bestScore = lastScore = CalculateScore(message_.DecryptInt(key_));
 	
 	while (bestScore < 42000 && iterations < 35)
 	{
@@ -51,10 +52,11 @@ void Solver::Start()
 			for (int p2 = 0; p2 < key_.GetLength(); p2++)
 			{
 				if (!key_.Swap(p1, p2)) continue;
-				int score = CalculateScore(message_->DecryptInt(key_));
+				int score = CalculateScore(message_.DecryptInt(key_));
 				
 				if (tempTabu_.find(key_.AsPlainText()) != std::end(tempTabu_) ||
-					optimalTabu_.find(key_.AsPlainText()) != std::end(optimalTabu_))
+				  false)
+					//optimalTabu_.find(key_.AsPlainText()) != std::end(optimalTabu_))
 				{
 					//std::cout << "Blacklisted " << std::endl;
 					score = -10000;
@@ -64,10 +66,7 @@ void Solver::Start()
 				}
 				tempTabu_.insert(key_.AsPlainText());
 				
-				if (maxTolerance)
-				{
-					tolerance = rand() % (maxTolerance - currentTolerance + 1);
-				}
+				tolerance = rand() % (maxTolerance - currentTolerance + 1);
 				
 				if (score < lastScore - tolerance)
 				{
@@ -99,8 +98,8 @@ void Solver::Start()
 				currentTolerance = 0;
 			}
 			
-			currentTabu++;
-			if (currentTabu >= 300 /* max tabu */)
+			         unimprovedIterations++;
+			if (unimprovedIterations >= iterationsBeforeReset)
 			{
 				std::cout << "The plateau's clean, no dirt to be seen" << std::endl;
 				optimalTabu_.insert(currentBestKey.AsPlainText());
@@ -116,23 +115,24 @@ void Solver::Start()
 					std::cout << "Back to best key" << std::endl;
 					key_ = bestKey;
 				}
-				currentTabu = 0;
+				unimprovedIterations = 0;
 			}
 		}
 		else
 		{
 			currentTolerance = 0;
-			currentTabu = 0;
+			unimprovedIterations = 0;
 		}
 		key_.RandomShuffle(endIterationShuffles);
 		if (tempTabu_.find(key_.AsPlainText()) != std::end(tempTabu_) ||
-			optimalTabu_.find(key_.AsPlainText()) != std::end(optimalTabu_))
+			false)
+			//optimalTabu_.find(key_.AsPlainText()) != std::end(optimalTabu_))
 		{
 			lastScore = -10000;
 		}
 		else
 		{
-			lastScore = CalculateScore(message_->DecryptInt(key_));
+			lastScore = CalculateScore(message_.DecryptInt(key_));
 		}
 		
 		if ((rand() % 100) < tempClearProbability) { //CLEAR_TABU_PROB
@@ -140,7 +140,6 @@ void Solver::Start()
 			tempTabu_.clear();
 		}
 		
-		tolerance = 0;
 		iterations++;
 		std::cout << "Iteration " << iterations - 1 << " done with score " << currentBestScore << ", best is " << bestScore << std::endl;
 	} //end of hill climber loop
@@ -149,8 +148,10 @@ void Solver::Start()
 	std::cout << "Best key is " << bestKey.AsPlainText() << std::endl;
 	std::cout << "Best score is " << bestScore << std::endl;
 	std::cout << "And it decrypts to" << std::endl;
-	std::cout << message_->DecryptAsString(bestKey);
+	std::cout << message_.DecryptAsString(bestKey);
 	
+	bestKey_ = bestKey;
+	return bestScore;
 }
 
 int Solver::CalculateScore(const std::vector<int>& plaintext)
@@ -193,9 +194,7 @@ int Solver::CalculateScore(const std::vector<int>& plaintext)
 		}
 		remaining--;
 	}
-	//std::cout << "Scored " << pentascore << " " << (tetrascore >> 1) << " " << (triscore >> 2 ) << " " << (biscore >> 3) << std::endl;
 	score = pentascore + (tetrascore >> 1) + (triscore >> 2) + (biscore >> 3);
-	//score = pentascore + (tetrascore) + (triscore) + (biscore);
 	
 	//update statistics
 	
@@ -284,12 +283,6 @@ double Solver::GetDIoC(std::vector<int>& plaintext)
 	dioc /= count * (count - 1);
 	std::cout << "DIOC count is " << count << std::endl;
 	return dioc;
-}
-
-void Solver::TestScore(std::string& plaintext)
-{
-	//shut up
-	//std::cout << "Got " << CalculateScore(plaintext) << std::endl;
 }
 
 // Using this over std::log does on average save about 0.05s per run

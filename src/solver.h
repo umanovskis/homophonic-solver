@@ -6,16 +6,17 @@
 #include <memory>
 #include <vector>
 #include "key.h"
+#include "message.h"
 
-class Message;
+//class Message;
 //class Key;
 
 class Solver
 {
 private:
-	Message* message_;
+	Message message_;
 	Key key_;
-	Key* bestKey_;
+	Key bestKey_;
 	int CalculateScore(const std::vector<int>& plaintext);
 	double GetDIoC(std::vector<int>& plaintext);
 	std::unordered_set<std::string> tempTabu_;
@@ -25,10 +26,9 @@ private:
 	Solver& operator=(const Solver&) = delete;
 public:
 	Solver();
-	Solver(Message* message, Key &key);
+	Solver(const Message& message, Key &key);
 	void SetKey(Key &key);
-	void Start();
-	void TestScore(std::string& plaintext);
+	int Start();
 };
 
 #endif
