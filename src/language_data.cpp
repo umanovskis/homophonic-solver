@@ -675,8 +675,6 @@ namespace LanguageData
 	
 	void Populate(string filename, int* array)
 	{
-		ifstream ifs(filename);
-		string line;
 		FILE* f = fopen(filename.c_str(), "r");
 		int idx, val;
 		while (fscanf(f, "%d %d", &idx, &val) != EOF) {

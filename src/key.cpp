@@ -54,7 +54,7 @@ void Key::SetMapSymbol(const char cipherSymbol, int plainSymbol)
 	key_[cipherSymbol] = plainSymbol;
 }
 
-std::string Key::AsPlainText()
+std::string Key::AsPlainText() const
 {
 	std::string s = "";
 	for (auto pair : key_)

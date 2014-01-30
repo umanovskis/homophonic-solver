@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Message::Message(const string ciphertext) : ciphertext_(ciphertext), num_symbols_(), 
+Message::Message(const string& ciphertext) : ciphertext_(ciphertext), num_symbols_(), 
 											uniform_(), freqmap_()
 {
 	Init();
@@ -42,25 +42,11 @@ const Message::FreqMap Message::GetFrequencyMap() const
 	return freqmap_;
 }
 
-void Message::PrintFrequencyMap() const
-{
-	for (auto pair : freqmap_)
-	{
-		std::cout << pair.first << " : " << pair.second << endl;
-	}
-	std::cout << std::endl;
-}
-
 int Message::GuessNumberOfHomophones(char c) const
 {
 	int expectedInText = LanguageData::GetLetterFrequency(c) * ciphertext_.size();
 	if (expectedInText == 0) expectedInText = 1;
 	return max(expectedInText / uniform_, 1);
-}
-
-int Message::GetUniformNumber() const
-{
-	return uniform_;
 }
 
 const std::string Message::DecryptAsString(Key &key) const

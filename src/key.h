@@ -19,7 +19,7 @@ public:
 	void PrintKey() const;
 	int GetLength() const;
     bool Swap(size_t p1, size_t p2);
-	std::string AsPlainText();
+	std::string AsPlainText() const;
 	void RandomShuffle(int times);
 	
 	Key();

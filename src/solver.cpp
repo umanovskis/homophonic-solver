@@ -25,9 +25,9 @@ void Solver::SetKey(Key &key)
 
 int Solver::Start()
 {
-	int lastScore = CalculateScore(message_.DecryptInt(key_));
-	int bestScore = lastScore;
-	int currentBestScore = bestScore;
+	int lastScore;
+	int bestScore;
+	int currentBestScore;
 	unsigned int iterations = 0;
 	const int maxTolerance = 40;
 	const int endIterationShuffles = 5;
@@ -36,7 +36,6 @@ int Solver::Start()
 	
 	int tolerance = 0;
 	int currentTolerance = 0;
-	bool improved = false;
 	int unimprovedIterations = 0;
 	
 	Key bestKey(key_);
@@ -46,7 +45,7 @@ int Solver::Start()
 	
 	while (bestScore < 42000 && iterations < 35)
 	{
-		improved = false;
+		bool improved = false;
 		for (int p1 = 0; p1 < key_.GetLength(); p1++)
 		{
 			for (int p2 = 0; p2 < key_.GetLength(); p2++)

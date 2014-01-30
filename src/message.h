@@ -17,12 +17,10 @@ private:
 	FreqMap freqmap_;
 	void Init();
 public:
-	Message(const std::string ciphertext);
+	Message(const std::string& ciphertext);
 	const std::string GetCiphertext() const;
 	const FreqMap GetFrequencyMap() const;
-	void PrintFrequencyMap() const;
 	int GuessNumberOfHomophones(char c) const;
-	int GetUniformNumber() const;
 	const std::string DecryptAsString(Key &key) const;
 	std::vector<int> DecryptInt(Key &key) const;
 };
