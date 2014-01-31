@@ -13,7 +13,8 @@ static inline float fastlog (float x);
 
 Solver::Solver(const Message& message, Key &key) : message_(message), key_(key), bestKey_(Key()),
 											tempTabu_(std::unordered_set<std::string>()), 
-											optimalTabu_((std::unordered_set<std::string>()))
+											optimalTabu_((std::unordered_set<std::string>())),
+											iteration_limit_(-1), score_limit_(-1), time_limit_(-1)
 {
 	srand(time(nullptr));
 }
@@ -43,7 +44,11 @@ int Solver::Start()
 
 	currentBestScore = bestScore = lastScore = CalculateScore(message_.DecryptInt(key_));
 	
-	while (bestScore < 42000 && iterations < 35)
+	clock_t beginTime = clock();
+	
+	//while (bestScore < 42000 && iterations < 35)
+	while ((iteration_limit_ < 0 || iteration_limit_ > iterations) && (score_limit_ < 0 || score_limit_ > bestScore) &&
+	  (time_limit_ < 0 || time_limit_ > TimeSince(beginTime)))
 	{
 		bool improved = false;
 		for (int p1 = 0; p1 < key_.GetLength(); p1++)
@@ -282,6 +287,27 @@ double Solver::GetDIoC(std::vector<int>& plaintext)
 	dioc /= count * (count - 1);
 	std::cout << "DIOC count is " << count << std::endl;
 	return dioc;
+}
+
+void Solver::SetIterationLimit(int limit)
+{
+	iteration_limit_ = limit;
+}
+
+void Solver::SetScoreLimit(int limit)
+{
+	score_limit_ = limit;
+}
+
+void Solver::SetTimeLimit(int limit)
+{
+	time_limit_ = limit;
+}
+
+int Solver::TimeSince(clock_t &begin)
+{
+	clock_t now = clock();	
+	return (now - begin) / CLOCKS_PER_SEC;
 }
 
 // Using this over std::log does on average save about 0.05s per run

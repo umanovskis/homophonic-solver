@@ -12,7 +12,7 @@ private:
 	typedef std::unordered_map<char, int> MapType;
 	int length_;
 	std::unordered_map<char, int> key_;
-	char cached[2];
+	char cached_[2];
 public:
 	void Init(const Message& message);
 	void SetMapSymbol(const char cipherSymbol, int plainSymbol);

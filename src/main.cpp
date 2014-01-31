@@ -11,6 +11,7 @@
 
 using namespace std;
 
+#ifdef EXECUTABLE
 int main(int argc, char **argv) {
 	if (argc != 2)
 	{
@@ -33,7 +34,10 @@ int main(int argc, char **argv) {
 	cout << LanguageData::GetLetterFrequency('A') << endl;
 	
 	Solver solver(msg, key);
+	solver.SetScoreLimit(44000);
+	solver.SetTimeLimit(5);
 	solver.Start();
 	
     return 0;
 }
+#endif

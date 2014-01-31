@@ -4,6 +4,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Weffc++ -g -O3 -Ofast -flto -fwho
 
 add_executable(homophonic-solver src/solver.cpp src/language_data.cpp src/message.cpp src/key.cpp src/main.cpp)
 add_library(solver STATIC src/solver.cpp src/language_data.cpp src/message.cpp src/key.cpp src/main.cpp)
+set_target_properties(homophonic-solver PROPERTIES COMPILE_FLAGS "-DEXECUTABLE")
 
 
 install(TARGETS homophonic-solver RUNTIME DESTINATION bin)

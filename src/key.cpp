@@ -5,16 +5,18 @@
 #include <cstdlib>
 #include <algorithm>
 
-Key::Key() : length_(0), key_(MapType())
+Key::Key() : length_(0), key_(MapType()), cached_()
 {}
 
-Key::Key(const Key& other) : length_(other.length_), key_(other.key_)
+Key::Key(const Key& other) : length_(other.length_), key_(other.key_), cached_()
 { }
 
 Key& Key::operator=(const Key& other)
 {
 	length_ = other.length_;
 	key_ = MapType(other.key_);
+	cached_[0] = other.cached_[0];
+	cached_[1] = other.cached_[1];
 	
 	return *this;
 }
@@ -96,15 +98,15 @@ bool Key::Swap(size_t p1, size_t p2)
 	if ((*it).second == (*it2).second) {
 		return false;
 	}
-	cached[0] = (*it).first;
-	cached[1] = (*it2).first;
+	cached_[0] = (*it).first;
+	cached_[1] = (*it2).first;
 	std::swap((*it).second, (*it2).second);
 	return true;
 }
 
 char* Key::GetCached()
 {
-	return cached;
+	return cached_;
 }
 
 void Key::RandomShuffle(int times)

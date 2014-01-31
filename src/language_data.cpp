@@ -672,6 +672,9 @@ namespace LanguageData
 	
 	void Populate(string filename, int* array)
 	{
+		// C-style reading is significanty faster than using ifstream and sstream here
+		// Further possible optimization: fread whole thing into memory and then parse with sscanf
+		// But converting the files into binary representation creates platform dependency
 		FILE* f = fopen(filename.c_str(), "r");
 		int idx, val;
 		while (fscanf(f, "%d %d", &idx, &val) != EOF) {
