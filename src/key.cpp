@@ -102,7 +102,7 @@ bool Key::Swap(size_t p1, size_t p2)
 	return true;
 }
 
-char* Key::getCached()
+char* Key::GetCached()
 {
 	return cached;
 }

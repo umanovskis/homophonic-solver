@@ -22,7 +22,7 @@ public:
     bool Swap(size_t p1, size_t p2);
 	std::string AsPlainText() const;
 	void RandomShuffle(int times);
-	char* getCached();
+	char* GetCached();
 	
 	Key();
 	Key(const Key& other);

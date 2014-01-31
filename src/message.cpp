@@ -77,7 +77,7 @@ const std::vector<int>& Message::DecryptIntCached(Key &key) const
 	for (size_t i = 0; i < ciphertext_.size(); i++)
 	{
 		char c = ciphertext_[i];
-		if (c == key.getCached()[0] || c == key.getCached()[1])
+		if (c == key.GetCached()[0] || c == key.GetCached()[1])
 		{
 		  cachedPlaintext[i] = key.GetPlainSymbol(c);
 		}
