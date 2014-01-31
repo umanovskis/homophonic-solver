@@ -8,7 +8,8 @@
 using namespace std;
 
 Message::Message(const string& ciphertext) : ciphertext_(ciphertext), num_symbols_(), 
-											uniform_(), freqmap_(), cachedPlaintext(ciphertext_.size())
+											uniform_(), freqmap_(), cachedPlaintext(ciphertext_.size()),
+											oldCache(ciphertext_.size())
 {
 	Init();
 	//printFrequencyMap();
@@ -72,6 +73,7 @@ std::vector<int> Message::DecryptInt(Key &key) const
 
 const std::vector<int>& Message::DecryptIntCached(Key &key) const
 {
+	oldCache = cachedPlaintext;
 	for (size_t i = 0; i < ciphertext_.size(); i++)
 	{
 		char c = ciphertext_[i];
@@ -81,4 +83,9 @@ const std::vector<int>& Message::DecryptIntCached(Key &key) const
 		}
 	}
 	return cachedPlaintext;
+}
+
+void Message::RestoreCache() const
+{
+  cachedPlaintext = std::move(oldCache);
 }

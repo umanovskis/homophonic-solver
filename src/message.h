@@ -17,6 +17,7 @@ private:
 	FreqMap freqmap_;
 	void Init();
 	mutable	std::vector<int> cachedPlaintext;
+	mutable std::vector<int> oldCache;
 public:
 	Message(const std::string& ciphertext);
 	const std::string GetCiphertext() const;
@@ -25,6 +26,7 @@ public:
 	const std::string DecryptAsString(Key &key) const;
 	std::vector<int> DecryptInt(Key &key) const;
 	const std::vector<int>& DecryptIntCached(Key &key) const;
+	void RestoreCache() const;
 };
 
 #endif

@@ -69,7 +69,7 @@ int Solver::Start()
 				if (score < lastScore - tolerance)
 				{
 					key_.Swap(p1, p2); //undo last swap
-					message_.DecryptIntCached(key_); //restores previous cache
+					message_.RestoreCache(); //restores previous cache
 				}
 				else
 				{
