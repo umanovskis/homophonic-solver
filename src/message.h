@@ -16,6 +16,7 @@ private:
 	int uniform_;
 	FreqMap freqmap_;
 	void Init();
+	mutable	std::vector<int> cachedPlaintext;
 public:
 	Message(const std::string& ciphertext);
 	const std::string GetCiphertext() const;
@@ -23,6 +24,7 @@ public:
 	int GuessNumberOfHomophones(char c) const;
 	const std::string DecryptAsString(Key &key) const;
 	std::vector<int> DecryptInt(Key &key) const;
+	std::vector<int> DecryptIntCached(Key &key) const;
 };
 
 #endif

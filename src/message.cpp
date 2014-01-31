@@ -68,5 +68,17 @@ std::vector<int> Message::DecryptInt(Key &key) const
 	{
 		v.push_back(key.GetPlainSymbol(c));
 	}
-	return v;
+	cachedPlaintext = v;
+	return cachedPlaintext;
+}
+
+std::vector<int> Message::DecryptIntCached(Key &key) const
+{
+	for (size_t i = 0; i < cachedPlaintext.size(); i++)
+	{
+		char c = cachedPlaintext[i];
+		if (!(c == key.getCached()[0] || c == key.getCached()[1])) continue;
+		cachedPlaintext[i] = key.GetPlainSymbol(c);
+	}
+	return cachedPlaintext;
 }

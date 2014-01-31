@@ -51,7 +51,7 @@ int Solver::Start()
 			for (int p2 = 0; p2 < key_.GetLength(); p2++)
 			{
 				if (!key_.Swap(p1, p2)) continue;
-				int score = CalculateScore(message_.DecryptInt(key_));
+				int score = CalculateScore(message_.DecryptIntCached(key_));
 				
 				if (tempTabu_.find(key_.AsPlainText()) != std::end(tempTabu_) ||
 				  false)

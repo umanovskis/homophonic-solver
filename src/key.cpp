@@ -96,8 +96,15 @@ bool Key::Swap(size_t p1, size_t p2)
 	if ((*it).second == (*it2).second) {
 		return false;
 	}
+	cached[0] = (*it).first;
+	cached[1] = (*it2).first;
 	std::swap((*it).second, (*it2).second);
 	return true;
+}
+
+char* Key::getCached()
+{
+	return cached;
 }
 
 void Key::RandomShuffle(int times)
