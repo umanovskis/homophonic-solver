@@ -1,8 +1,5 @@
 #include "language_data.h"
-#include <fstream>
-#include <sstream>
 #include <cstring>
-#include <vector>
 
 using namespace std;
 
