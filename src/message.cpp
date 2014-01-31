@@ -8,7 +8,7 @@
 using namespace std;
 
 Message::Message(const string& ciphertext) : ciphertext_(ciphertext), num_symbols_(), 
-											uniform_(), freqmap_()
+											uniform_(), freqmap_(), cachedPlaintext(ciphertext_.size())
 {
 	Init();
 	//printFrequencyMap();
@@ -62,23 +62,23 @@ const std::string Message::DecryptAsString(Key &key) const
 
 std::vector<int> Message::DecryptInt(Key &key) const
 {
-	std::vector<int> v;
-	v.reserve(ciphertext_.size());
+	cachedPlaintext.clear();
 	for (const char &c : ciphertext_)
 	{
-		v.push_back(key.GetPlainSymbol(c));
+		cachedPlaintext.push_back(key.GetPlainSymbol(c));
 	}
-	cachedPlaintext = v;
 	return cachedPlaintext;
 }
 
-std::vector<int> Message::DecryptIntCached(Key &key) const
+const std::vector<int>& Message::DecryptIntCached(Key &key) const
 {
-	for (size_t i = 0; i < cachedPlaintext.size(); i++)
+	for (size_t i = 0; i < ciphertext_.size(); i++)
 	{
-		char c = cachedPlaintext[i];
-		if (!(c == key.getCached()[0] || c == key.getCached()[1])) continue;
-		cachedPlaintext[i] = key.GetPlainSymbol(c);
+		char c = ciphertext_[i];
+		if (c == key.getCached()[0] || c == key.getCached()[1])
+		{
+		  cachedPlaintext[i] = key.GetPlainSymbol(c);
+		}
 	}
 	return cachedPlaintext;
 }

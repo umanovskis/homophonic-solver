@@ -24,7 +24,7 @@ public:
 	int GuessNumberOfHomophones(char c) const;
 	const std::string DecryptAsString(Key &key) const;
 	std::vector<int> DecryptInt(Key &key) const;
-	std::vector<int> DecryptIntCached(Key &key) const;
+	const std::vector<int>& DecryptIntCached(Key &key) const;
 };
 
 #endif

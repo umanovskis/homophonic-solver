@@ -52,7 +52,6 @@ int Solver::Start()
 			{
 				if (!key_.Swap(p1, p2)) continue;
 				int score = CalculateScore(message_.DecryptIntCached(key_));
-				
 				if (tempTabu_.find(key_.AsPlainText()) != std::end(tempTabu_) ||
 				  false)
 					//optimalTabu_.find(key_.AsPlainText()) != std::end(optimalTabu_))
@@ -70,6 +69,7 @@ int Solver::Start()
 				if (score < lastScore - tolerance)
 				{
 					key_.Swap(p1, p2); //undo last swap
+					message_.DecryptIntCached(key_); //restores previous cache
 				}
 				else
 				{
@@ -97,7 +97,7 @@ int Solver::Start()
 				currentTolerance = 0;
 			}
 			
-			         unimprovedIterations++;
+			unimprovedIterations++;
 			if (unimprovedIterations >= iterationsBeforeReset)
 			{
 				std::cout << "The plateau's clean, no dirt to be seen" << std::endl;
