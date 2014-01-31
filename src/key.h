@@ -9,7 +9,7 @@ class Message;
 class Key
 {
 private:
-	typedef std::unordered_map<char,char> MapType;
+	typedef std::unordered_map<char, int> MapType;
 	int length_;
 	std::unordered_map<char, int> key_;
 public:

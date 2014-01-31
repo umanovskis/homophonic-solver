@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <algorithm>
 
-Key::Key() : length_(0), key_(std::unordered_map<char, int>())
+Key::Key() : length_(0), key_(MapType())
 {}
 
 Key::Key(const Key& other) : length_(other.length_), key_(other.key_)
@@ -14,7 +14,7 @@ Key::Key(const Key& other) : length_(other.length_), key_(other.key_)
 Key& Key::operator=(const Key& other)
 {
 	length_ = other.length_;
-	key_ = std::unordered_map<char, int>(other.key_);
+	key_ = MapType(other.key_);
 	
 	return *this;
 }
@@ -81,8 +81,8 @@ int Key::GetLength() const
 
 bool Key::Swap(size_t p1, size_t p2)
 {
-	std::unordered_map<char, int>::iterator it = key_.begin();
-	std::unordered_map<char, int>::iterator it2 = key_.begin();
+	MapType::iterator it = key_.begin();
+	MapType::iterator it2 = key_.begin();
 	if (p1 > key_.size() || p2 > key_.size())
 	{
 		std::cout << "impossible " << key_.size() << std::endl;
