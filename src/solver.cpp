@@ -140,12 +140,13 @@ int Solver::Start()
 		}
 		
 		if ((rand() % 100) < tempClearProbability) { //CLEAR_TABU_PROB
-			std::cout << "Clearing temp" << std::endl;
 			tempTabu_.clear();
 		}
 		
 		iterations++;
+#ifdef EXECUTABLE
 		std::cout << "Iteration " << iterations - 1 << " done with score " << currentBestScore << ", best is " << bestScore << std::endl;
+#endif
 	} //end of hill climber loop
 
 	std::cout << iterations << " iterations completed" << std::endl;
