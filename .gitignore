@@ -12,3 +12,4 @@ CMakeCache.txt
 cmake_install.cmake
 CMakeFiles/
 profile
+callgrind.out*
