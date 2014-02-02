@@ -73,9 +73,6 @@ public:
 	int Solve()
 	{
 		key_.Init(msg_);
-		std::cout << "Inited" << std::endl;
-		std::cout << msg_.GetCiphertext() << std::endl;
-		std::cout << key_.AsPlainText() << std::endl;
 		solver_ = new Solver(msg_, key_);
 		solver_->SetTimeLimit(5);
 		solver_->SetScoreLimit(42000);
